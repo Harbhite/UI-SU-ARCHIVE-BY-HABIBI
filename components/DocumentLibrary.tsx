@@ -1,0 +1,305 @@
+
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+*/
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, FileText, Download, Search, Filter, Check, Upload, X, Star } from 'lucide-react';
+
+interface DocumentLibraryProps {
+  onBack: () => void;
+}
+
+interface Doc {
+    id: string;
+    title: string;
+    year: number;
+    type: 'Constitution' | 'Bill' | 'Manifesto' | 'Speech' | 'Report' | 'Memo';
+    size: string;
+    description: string;
+}
+
+const initialDocuments: Doc[] = [
+    { id: '1', title: 'The 1952 Students Union Constitution', year: 1952, type: 'Constitution', size: '2.4 MB', description: 'The founding legal document of the Union.' },
+    { id: '2', title: 'Gamaliel Onosode: The Mellamby Address', year: 1955, type: 'Speech', size: '450 KB', description: 'Address delivered at the first hall dinner of Mellamby Hall.' },
+    { id: '3', title: 'Independence Day Union Memo', year: 1960, type: 'Report', size: '800 KB', description: 'Official union stance on Nigerian Independence.' },
+    { id: '4', title: 'Kunle Adepeju Memorial Committee Report', year: 1971, type: 'Report', size: '1.2 MB', description: 'Findings on the police brutality incident.' },
+    { id: '5', title: 'Ali Must Go: Charter of Demands', year: 1978, type: 'Manifesto', size: '1.5 MB', description: 'The list of demands presented to the Federal Military Government.' },
+    { id: '6', title: 'Student Welfare Bill 1985', year: 1985, type: 'Bill', size: '600 KB', description: 'Legislative bill for improving cafeteria services.' },
+    { id: '7', title: 'Anti-Cultism Decree', year: 1999, type: 'Bill', size: '900 KB', description: 'Union regulations against secret cult activities on campus.' },
+    { id: '8', title: '2001 Amended Constitution', year: 2001, type: 'Constitution', size: '3.1 MB', description: 'Major amendments following the return to democracy.' },
+    { id: '9', title: 'The "Book of Life" Speech Transcript', year: 2017, type: 'Speech', size: '300 KB', description: 'Transcript of Ojo Aderemi\'s budget speech.' },
+    { id: '10', title: 'Students Union Restoration Agreement', year: 2019, type: 'Report', size: '2.0 MB', description: 'Agreement between the University Management and Student Leaders.' },
+    { id: '11', title: '2023 Appropriation Bill', year: 2023, type: 'Bill', size: '1.8 MB', description: 'Approved budget for the 2023/2024 academic session.' },
+    { id: '12', title: '2024 Constitution (Digital Edition)', year: 2024, type: 'Constitution', size: '4.2 MB', description: 'The current operating constitution of the Union.' },
+];
+
+export const DocumentLibrary: React.FC<DocumentLibraryProps> = ({ onBack }) => {
+    const [documents, setDocuments] = useState<Doc[]>(initialDocuments);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedDecade, setSelectedDecade] = useState<string>("All");
+    const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    
+    // Form State
+    const [newTitle, setNewTitle] = useState("");
+    const [newYear, setNewYear] = useState("");
+    const [newType, setNewType] = useState("Report");
+    const [newDesc, setNewDesc] = useState("");
+    const [isUploading, setIsUploading] = useState(false);
+
+    const decades = ["All", "2020s", "2010s", "2000s", "1990s", "1980s", "1970s", "1960s", "1950s"];
+    const docTypes = ['Constitution', 'Bill', 'Manifesto', 'Speech', 'Report', 'Memo'];
+
+    const toggleType = (type: string) => {
+        setSelectedTypes(prev => 
+            prev.includes(type) 
+                ? prev.filter(t => t !== type) 
+                : [...prev, type]
+        );
+    };
+
+    const handleUpload = (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsUploading(true);
+        setTimeout(() => {
+            const newDoc: Doc = {
+                id: (documents.length + 1).toString() + Date.now(),
+                title: newTitle,
+                year: parseInt(newYear) || new Date().getFullYear(),
+                type: newType as any,
+                size: "1.5 MB",
+                description: newDesc
+            };
+            setDocuments([newDoc, ...documents]);
+            setIsUploading(false);
+            setIsUploadModalOpen(false);
+            setNewTitle(""); setNewYear(""); setNewType("Report"); setNewDesc("");
+        }, 2000);
+    };
+
+    const filteredDocs = documents.filter(doc => {
+        const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              doc.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                              doc.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesDecade = selectedDecade === "All" || (() => {
+             const startYear = parseInt(selectedDecade.replace("s", ""));
+             const endYear = startYear + 9;
+             return doc.year >= startYear && doc.year <= endYear;
+        })();
+        const matchesType = selectedTypes.length === 0 || selectedTypes.includes(doc.type);
+        return matchesSearch && matchesDecade && matchesType;
+    });
+
+    return (
+        <div className="min-h-screen bg-slate-50 pt-32 pb-16">
+            <div className="container mx-auto px-6">
+                <div className="flex justify-between items-start">
+                     <button 
+                        onClick={onBack}
+                        className="group flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] hover:text-nobel-gold transition-colors mb-12"
+                    >
+                        <div className="p-2 rounded-full border border-slate-300 group-hover:border-nobel-gold transition-colors">
+                            <ArrowLeft size={14} />
+                        </div>
+                        <span>Back to Home</span>
+                    </button>
+
+                     <button
+                        onClick={() => setIsUploadModalOpen(true)}
+                        className="flex items-center gap-2 px-6 py-3 bg-ui-blue text-white rounded-full shadow-lg hover:bg-nobel-gold hover:text-slate-900 transition-all text-xs font-bold uppercase tracking-widest"
+                    >
+                        <Upload size={14} /> Upload
+                    </button>
+                </div>
+
+                <div className="mb-20">
+                     <div className="flex items-center gap-4 mb-4">
+                        <Star className="text-nobel-gold w-6 h-6" fill="currentColor" />
+                        <span className="text-xs font-bold tracking-[0.2em] uppercase text-slate-500">Repository</span>
+                    </div>
+                    <h1 className="text-6xl md:text-8xl font-serif text-ui-blue leading-[0.9] mb-6">
+                        Document <br/> <span className="italic text-slate-300">Library</span>
+                    </h1>
+                    <p className="text-xl text-slate-600 font-light max-w-2xl">
+                        The primary sources of our history. Digitized for posterity.
+                    </p>
+                </div>
+
+                <div className="flex flex-col lg:flex-row gap-12 items-start">
+                    {/* Sidebar Filters */}
+                    <div className="w-full lg:w-72 flex-shrink-0 space-y-8 sticky top-32">
+                        
+                        {/* Search */}
+                        <div className="relative">
+                            <input 
+                                type="text" 
+                                placeholder="Search..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-4 pr-10 py-3 bg-transparent border-b-2 border-slate-200 focus:border-nobel-gold focus:outline-none font-serif text-lg text-slate-900 placeholder-slate-400 transition-colors"
+                            />
+                            <Search className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                        </div>
+
+                        <div>
+                            <div className="flex items-center gap-2 mb-4 text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em]">
+                                <Filter size={12} /> Timeline
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {decades.map(decade => (
+                                    <button
+                                        key={decade}
+                                        onClick={() => setSelectedDecade(decade)}
+                                        className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${selectedDecade === decade ? 'bg-ui-blue text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}
+                                    >
+                                        {decade}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div className="flex items-center justify-between mb-4 text-slate-400 font-bold uppercase text-[10px] tracking-[0.2em]">
+                                <div className="flex items-center gap-2"><FileText size={12} /> Doc Type</div>
+                                {selectedTypes.length > 0 && (
+                                    <button onClick={() => setSelectedTypes([])} className="text-red-400 hover:text-red-600">Reset</button>
+                                )}
+                            </div>
+                            <div className="space-y-3">
+                                {docTypes.map(type => {
+                                    const isSelected = selectedTypes.includes(type);
+                                    return (
+                                        <button
+                                            key={type}
+                                            onClick={() => toggleType(type)}
+                                            className={`flex items-center gap-3 group w-full text-left`}
+                                        >
+                                            <div className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-all ${isSelected ? 'bg-nobel-gold border-nobel-gold' : 'border-slate-300 group-hover:border-slate-400'}`}>
+                                                {isSelected && <Check size={10} className="text-white" />}
+                                            </div>
+                                            <span className={`text-sm transition-colors ${isSelected ? 'text-ui-blue font-bold' : 'text-slate-500 group-hover:text-slate-700'}`}>{type}</span>
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="flex-1 w-full">
+                        <div className="grid grid-cols-1 gap-6">
+                            {filteredDocs.length > 0 ? (
+                                filteredDocs.map((doc) => (
+                                    <motion.div 
+                                        key={doc.id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="group bg-white p-8 border border-slate-100 hover:border-slate-300 hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row gap-6 justify-between items-start md:items-center"
+                                    >
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{doc.type}</span>
+                                                <div className="w-1 h-1 rounded-full bg-slate-300"></div>
+                                                <span className="text-[10px] font-bold uppercase tracking-widest text-nobel-gold">{doc.year}</span>
+                                            </div>
+                                            <h3 className="font-serif text-2xl text-ui-blue mb-2 group-hover:text-nobel-gold transition-colors">{doc.title}</h3>
+                                            <p className="text-sm text-slate-500 font-light max-w-lg">{doc.description}</p>
+                                        </div>
+                                        
+                                        <button className="shrink-0 flex items-center gap-2 px-6 py-3 bg-slate-50 hover:bg-ui-blue hover:text-white text-slate-900 text-xs font-bold uppercase tracking-widest transition-all">
+                                            <Download size={14} /> <span>Download</span>
+                                        </button>
+                                    </motion.div>
+                                ))
+                            ) : (
+                                <div className="py-24 text-center border border-dashed border-slate-300">
+                                    <p className="text-slate-400 font-serif italic text-lg">No documents found.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Upload Modal - Kept Clean */}
+            <AnimatePresence>
+                {isUploadModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm">
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-slate-50 w-full max-w-lg shadow-2xl overflow-hidden"
+                        >
+                            <div className="flex justify-between items-center p-8 border-b border-slate-200">
+                                <h3 className="font-serif text-3xl text-ui-blue">Upload</h3>
+                                <button onClick={() => setIsUploadModalOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors">
+                                    <X size={24} />
+                                </button>
+                            </div>
+                            
+                            <form onSubmit={handleUpload} className="p-8 space-y-6">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Title</label>
+                                    <input 
+                                        type="text" 
+                                        value={newTitle}
+                                        onChange={(e) => setNewTitle(e.target.value)}
+                                        required
+                                        className="w-full px-4 py-3 bg-white border border-slate-200 focus:border-nobel-gold focus:outline-none transition-colors"
+                                    />
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Year</label>
+                                        <input 
+                                            type="number" 
+                                            value={newYear}
+                                            onChange={(e) => setNewYear(e.target.value)}
+                                            required
+                                            className="w-full px-4 py-3 bg-white border border-slate-200 focus:border-nobel-gold focus:outline-none transition-colors"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Type</label>
+                                        <select 
+                                            value={newType}
+                                            onChange={(e) => setNewType(e.target.value)}
+                                            className="w-full px-4 py-3 bg-white border border-slate-200 focus:border-nobel-gold focus:outline-none transition-colors"
+                                        >
+                                            {docTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Description</label>
+                                    <textarea 
+                                        value={newDesc}
+                                        onChange={(e) => setNewDesc(e.target.value)}
+                                        rows={3}
+                                        className="w-full px-4 py-3 bg-white border border-slate-200 focus:border-nobel-gold focus:outline-none transition-colors resize-none"
+                                    />
+                                </div>
+
+                                <div className="pt-4">
+                                    <button 
+                                        type="submit"
+                                        disabled={isUploading}
+                                        className="w-full py-4 bg-ui-blue text-white font-bold uppercase tracking-[0.2em] hover:bg-nobel-gold hover:text-slate-900 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                                    >
+                                        {isUploading ? 'Uploading...' : 'Submit to Archive'}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}

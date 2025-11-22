@@ -4,50 +4,33 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Environment, Box, Cylinder } from '@react-three/drei';
-import * as THREE from 'three';
-
-const HistoryParticle = ({ position, color, scale = 1 }: { position: [number, number, number]; color: string; scale?: number }) => {
-  const ref = useRef<THREE.Mesh>(null);
-  
-  useFrame((state) => {
-    if (ref.current) {
-      const t = state.clock.getElapsedTime();
-      ref.current.position.y = position[1] + Math.sin(t * 0.5 + position[0]) * 0.1;
-      ref.current.rotation.x = t * 0.2;
-      ref.current.rotation.z = t * 0.1;
-    }
-  });
-
-  return (
-    <Box ref={ref} args={[0.5, 0.7, 0.1]} position={position} scale={scale}>
-      <meshStandardMaterial
-        color={color}
-        roughness={0.8}
-        metalness={0.1}
-        transparent
-        opacity={0.9}
-      />
-    </Box>
-  );
-};
+import React from 'react';
+import { Canvas } from '@react-three/fiber';
+import { Float, Environment, Box, Cylinder, Stars } from '@react-three/drei';
 
 export const HeroScene: React.FC = () => {
   return (
-    <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
+    <div className="absolute inset-0 z-0 opacity-100 pointer-events-none">
+      <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
-        <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-          {/* Abstract Books/Documents floating */}
-          <HistoryParticle position={[0, 0, 0]} color="#C5A059" scale={1.5} />
-          <HistoryParticle position={[-2, 1, -2]} color="#002147" scale={1} />
-          <HistoryParticle position={[2, -1.5, -1]} color="#8B4513" scale={1.2} />
-          <HistoryParticle position={[3, 2, -3]} color="#F5F5DC" scale={0.8} />
-        </Float>
+        <pointLight position={[-10, -10, -5]} intensity={0.5} color="#C5A059" />
         
+        <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
+            {/* Abstract Shapes representing the structure */}
+            <Box args={[1, 1, 1]} position={[2, 1, -2]} rotation={[0.5, 0.5, 0]}>
+                <meshStandardMaterial color="#C5A059" wireframe transparent opacity={0.3} />
+            </Box>
+            
+            <Box args={[0.5, 0.5, 0.5]} position={[-3, 2, -2]}>
+                <meshStandardMaterial color="#002147" transparent opacity={0.6} />
+            </Box>
+            <Cylinder args={[0.2, 0.2, 1]} position={[3, -2, -1]} rotation={[Math.PI/4, 0, 0]}>
+                <meshStandardMaterial color="#C5A059" transparent opacity={0.6} />
+            </Cylinder>
+        </Float>
+
+        <Stars radius={100} depth={50} count={1000} factor={4} saturation={0} fade speed={1} />
         <Environment preset="city" />
       </Canvas>
     </div>

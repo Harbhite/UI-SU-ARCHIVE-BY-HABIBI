@@ -5,20 +5,27 @@
 */
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Search, Award, Calendar, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Search, Calendar, Users, ChevronDown, ChevronUp, User, Star } from 'lucide-react';
 
 interface PastLeadersProps {
   onBack: () => void;
 }
 
+interface ExecutiveMember {
+    role: string;
+    name: string;
+    alias?: string;
+}
+
 interface Administration {
     session: string;
     president: string;
-    alias: string; // President's alias
-    motto: string; // Regime name/motto
+    alias: string;
+    motto: string;
     notableEvents: string;
     status: 'Completed' | 'Suspended' | 'Impeached' | 'Active';
+    team: ExecutiveMember[];
 }
 
 const administrations: Administration[] = [
@@ -26,57 +33,84 @@ const administrations: Administration[] = [
         session: "2024/2025",
         president: "Aweda Bolaji",
         alias: "Oloye",
-        motto: "Team inclusive",
-        notableEvents: "Current administration focusing on inclusivity and student welfare amid rising costs.",
-        status: "Active"
+        motto: "Team Inclusive",
+        notableEvents: "Current administration focusing on inclusivity, digital ID cards, and student welfare amid rising economic costs.",
+        status: "Active",
+        team: [
+            { role: "Vice President", name: "Bolutife", alias: "Abderry" },
+            { role: "General Secretary", name: "Ogundipo", alias: "Global" },
+            { role: "Asst. Gen. Sec", name: "Elemide Daniel" },
+            { role: "House Secretary", name: "Tunde-Ipaye" },
+            { role: "Public Relations Officer", name: "Adetona" },
+            { role: "Treasurer", name: "Hassan" },
+            { role: "Sports Secretary", name: "Olatunji" }
+        ]
     },
     {
         session: "2023/2024",
         president: "Samuel Samson Tobiloba",
         alias: "Host",
         motto: "Team Reform",
-        notableEvents: "Focused on reforming union processes and digitalizing the secretariat.",
-        status: "Completed"
+        notableEvents: "Focused on reforming union processes, constitutional review, and digitalizing the secretariat.",
+        status: "Completed",
+        team: [
+            { role: "Vice President", name: "Ogunsesan Nafisat" },
+            { role: "General Secretary", name: "Salami Olufisayo" },
+            { role: "Asst. Gen. Sec", name: "Oluwole Ayomide" },
+            { role: "House Secretary", name: "Sanjay" },
+            { role: "Public Relations Officer", name: "Adeona Tosin" },
+            { role: "Treasurer", name: "Busari" },
+            { role: "Sports Secretary", name: "Josh" }
+        ]
     },
     {
         session: "2021/2022",
         president: "Adewole Adeyinka",
         alias: "Mascot",
         motto: "Team Restoration",
-        notableEvents: "Restored the union after a long period of suspension and caretaker committees.",
-        status: "Completed"
+        notableEvents: "Restored the union after a long period of suspension and caretaker committees. Rebuilt student confidence.",
+        status: "Completed",
+        team: [
+            { role: "Vice President", name: "Zainab" },
+            { role: "General Secretary", name: "Bamidele Taiwo" },
+            { role: "Asst. Gen. Sec", name: "Federal" },
+            { role: "House Secretary", name: "Michael" },
+            { role: "Public Relations Officer", name: "Jagaban" },
+            { role: "Treasurer", name: "Daniel" },
+            { role: "Sports Secretary", name: "Felix" }
+        ]
     },
     {
         session: "2019/2020",
         president: "Akeju Olusegun",
         alias: "Akeju",
         motto: "Unification",
-        notableEvents: "Managed student affairs during the COVID-19 pandemic transition.",
-        status: "Completed"
+        notableEvents: "Managed student affairs during the COVID-19 pandemic transition and ASUU strikes.",
+        status: "Completed",
+        team: [
+            { role: "Vice President", name: "Oloyede" },
+            { role: "General Secretary", name: "Mustapha" },
+            { role: "Public Relations Officer", name: "Ajao" },
+            { role: "House Secretary", name: "Elijah" },
+            { role: "Sports Secretary", name: "Coach" }
+        ]
     },
     {
         session: "2017/2018",
         president: "Ojo Aderemi",
         alias: "Patriotic Intelligentsia",
         motto: "Patriotic Intelligentsia",
-        notableEvents: "Historically suspended for leading a protest against ID card fees. Famous 'Book of Life' speech.",
-        status: "Suspended"
-    },
-    {
-        session: "2014/2015",
-        president: "Odesola Victor",
-        alias: "Odesola",
-        motto: "Redemption",
-        notableEvents: "Advocated for better hostel facilities.",
-        status: "Completed"
-    },
-    {
-        session: "2011/2012",
-        president: "Edet Tokunbo",
-        alias: "Tokunbo",
-        motto: "Transformation",
-        notableEvents: "Led protests against fee hikes.",
-        status: "Completed"
+        notableEvents: "Historically suspended for leading a protest against ID card fees. Delivered the famous 'Book of Life' budget speech.",
+        status: "Suspended",
+        team: [
+            { role: "Vice President", name: "Oluwafunke" },
+            { role: "General Secretary", name: "Iyanuoluwa" },
+            { role: "Asst. Gen. Sec", name: "Nifemi" },
+            { role: "House Secretary", name: "Pascal", alias: "P. Manager" },
+            { role: "Public Relations Officer", name: "Adebayo" },
+            { role: "Treasurer", name: "Ajibola" },
+            { role: "Sports Secretary", name: "Sporty" }
+        ]
     },
     {
         session: "1994/1995",
@@ -84,7 +118,10 @@ const administrations: Administration[] = [
         alias: "Sowore",
         motto: "Anti-Military",
         notableEvents: "Led fierce anti-military protests during the Abacha regime. Expelled/Suspended multiple times.",
-        status: "Suspended"
+        status: "Suspended",
+        team: [
+             { role: "Movement", name: "Student Activists Collective" }
+        ]
     },
     {
         session: "1978/1979",
@@ -92,20 +129,17 @@ const administrations: Administration[] = [
         alias: "Okeowo",
         motto: "Ali Must Go",
         notableEvents: "Led the nationwide 'Ali Must Go' protests against the commercialization of education.",
-        status: "Impeached" // Removed from the constituent assembly, rusticated
-    },
-    {
-        session: "1970/1971",
-        president: "Speaker (Acting)",
-        alias: "Kunle Adepeju Era",
-        motto: "Welfare",
-        notableEvents: "Kunle Adepeju was shot by police during a peaceful protest, becoming the first student martyr.",
-        status: "Completed"
+        status: "Impeached",
+        team: [
+            { role: "General Secretary", name: "Comrade Arogundade" },
+            { role: "PRO", name: "Comrade Labinjo" }
+        ]
     }
 ];
 
 export const PastLeadersPage: React.FC<PastLeadersProps> = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const filteredAdmins = administrations.filter(admin => 
     admin.president.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -113,95 +147,136 @@ export const PastLeadersPage: React.FC<PastLeadersProps> = ({ onBack }) => {
     admin.alias.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const toggleExpand = (session: string) => {
+      setExpandedId(expandedId === session ? null : session);
+  };
+
   return (
-    <div className="min-h-screen bg-[#F5F4F0] pt-24 pb-16">
+    <div className="min-h-screen bg-slate-50 pt-32 pb-16">
       <div className="container mx-auto px-6">
-        <button 
+         {/* Back Navigation */}
+         <button 
             onClick={onBack}
-            className="group flex items-center gap-2 text-stone-500 hover:text-ui-blue transition-colors mb-8 font-medium"
+            className="group flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] hover:text-nobel-gold transition-colors mb-12"
         >
-            <div className="p-2 rounded-full bg-white border border-stone-200 group-hover:border-ui-blue transition-colors">
-                <ArrowLeft size={16} />
+            <div className="p-2 rounded-full border border-slate-300 group-hover:border-nobel-gold transition-colors">
+                <ArrowLeft size={14} />
             </div>
-            <span>Back to Archive</span>
+            <span>Back to Home</span>
         </button>
 
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-12">
             <div>
-                <div className="inline-block mb-3 text-xs font-bold tracking-widest text-stone-500 uppercase">HALL OF FAME</div>
-                <h1 className="font-serif text-4xl md:text-5xl text-stone-900 mb-4">Executive Archive</h1>
-                <p className="text-stone-600 max-w-xl leading-relaxed">
-                    A chronicled list of past Students' Union administrations. These individuals bore the burden of Aluta to preserve the heritage of the Union.
-                </p>
+                <div className="flex items-center gap-4 mb-4">
+                   <Star className="text-nobel-gold w-6 h-6" fill="currentColor" />
+                   <span className="text-xs font-bold tracking-[0.2em] uppercase text-slate-500">Hall of Fame</span>
+                </div>
+                <h1 className="text-6xl md:text-8xl font-serif text-ui-blue leading-[0.9]">
+                    Executive <br/> <span className="italic text-slate-300">Archive</span>
+                </h1>
             </div>
             
-            <div className="relative w-full md:w-72">
+            <div className="relative w-full md:w-96">
                 <input 
                     type="text" 
-                    placeholder="Search by name or year..."
+                    placeholder="Search leaders or years..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-stone-200 rounded-lg focus:outline-none focus:border-nobel-gold focus:ring-1 focus:ring-nobel-gold text-stone-800 placeholder-stone-400"
+                    className="w-full pl-4 pr-12 py-4 bg-white border-b-2 border-slate-200 focus:border-nobel-gold focus:outline-none text-slate-900 placeholder-slate-400 text-lg font-serif transition-colors"
                 />
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
+                <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="flex flex-col gap-6">
             {filteredAdmins.length > 0 ? (
                 filteredAdmins.map((admin, index) => (
                     <motion.div 
                         key={admin.session}
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="bg-white p-6 rounded-lg border border-stone-200 hover:border-nobel-gold hover:shadow-md transition-all group relative overflow-hidden"
+                        className="bg-white group relative overflow-hidden border border-transparent hover:border-slate-200 hover:shadow-xl transition-all duration-500 rounded-sm"
                     >
-                        <div className="absolute top-0 right-0 w-1 h-full bg-stone-200 group-hover:bg-nobel-gold transition-colors"></div>
-                        
-                        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-                            <div className="min-w-[100px]">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 bg-stone-100 text-stone-600 text-xs font-bold rounded-full border border-stone-200">
-                                    <Calendar size={12} /> {admin.session}
-                                </div>
-                            </div>
-                            
-                            <div className="flex-1">
-                                <div className="flex flex-col md:flex-row md:items-baseline gap-2 mb-1">
-                                    <h3 className="font-serif text-xl text-stone-900 font-bold">{admin.president}</h3>
-                                    <span className="text-sm text-stone-500 italic">"{admin.alias}"</span>
-                                </div>
-                                <div className="text-xs font-bold tracking-widest text-ui-blue uppercase mb-2">{admin.motto}</div>
-                                <p className="text-stone-600 text-sm leading-relaxed">{admin.notableEvents}</p>
-                            </div>
+                        {/* Selection Bar */}
+                        <div className={`absolute left-0 top-0 h-full w-1 transition-colors duration-300 ${expandedId === admin.session ? 'bg-nobel-gold' : 'bg-slate-100 group-hover:bg-nobel-gold/50'}`}></div>
 
-                            <div className="min-w-[120px] text-right">
-                                <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-sm ${
-                                    admin.status === 'Active' ? 'bg-green-100 text-green-800' :
-                                    admin.status === 'Suspended' ? 'bg-red-100 text-red-800' :
-                                    admin.status === 'Impeached' ? 'bg-orange-100 text-orange-800' :
-                                    'bg-stone-100 text-stone-500'
-                                }`}>
-                                    {admin.status}
-                                </span>
+                        <div className="p-8 cursor-pointer" onClick={() => toggleExpand(admin.session)}>
+                            <div className="flex flex-col lg:flex-row gap-8 lg:items-center">
+                                {/* Date */}
+                                <div className="min-w-[120px]">
+                                    <div className="text-xs font-bold tracking-[0.2em] uppercase text-slate-400 mb-1">Session</div>
+                                    <div className="font-serif text-2xl text-ui-blue">{admin.session}</div>
+                                </div>
+                                
+                                {/* Name */}
+                                <div className="flex-1">
+                                    <div className="flex flex-col md:flex-row md:items-baseline gap-3 mb-2">
+                                        <h3 className="font-serif text-3xl text-ui-blue">{admin.president}</h3>
+                                        <span className="text-sm font-bold tracking-widest uppercase text-nobel-gold">"{admin.alias}"</span>
+                                    </div>
+                                    <p className="text-slate-500 leading-relaxed max-w-2xl font-light">{admin.notableEvents}</p>
+                                </div>
+
+                                {/* Status & Toggle */}
+                                <div className="min-w-[160px] flex flex-row lg:flex-col justify-between lg:justify-center items-center lg:items-end gap-4">
+                                    <StatusBadge status={admin.status} />
+                                    
+                                    <button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 group-hover:border-slate-900 group-hover:text-slate-900 transition-all">
+                                        {expandedId === admin.session ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                        
+                        {/* Expanded Team Section */}
+                        <AnimatePresence>
+                            {expandedId === admin.session && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="bg-slate-50"
+                                >
+                                    <div className="p-8 border-t border-slate-100 ml-1">
+                                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                                            <Users size={14} /> The Executive Council
+                                        </h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                            {admin.team.map((member, idx) => (
+                                                <div key={idx} className="bg-white p-6 border border-slate-100 hover:border-slate-300 transition-colors">
+                                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">{member.role}</div>
+                                                    <div className="font-serif text-lg text-ui-blue">{member.name}</div>
+                                                    {member.alias && <div className="text-xs text-nobel-gold mt-1 italic">"{member.alias}"</div>}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 ))
             ) : (
-                <div className="py-12 text-center text-stone-500 bg-white rounded-lg border border-stone-200 border-dashed">
-                    <p>No records found matching "{searchTerm}"</p>
+                <div className="py-20 text-center text-slate-400">
+                    <p className="font-serif text-xl italic">No records found for "{searchTerm}"</p>
                 </div>
             )}
         </div>
-        
-        <div className="mt-12 p-6 bg-[#EFECE6] rounded-lg border border-stone-200 text-center">
-            <p className="text-sm text-stone-600 font-serif italic">
-                "The labor of our heroes past shall never be in vain."
-            </p>
-        </div>
-
       </div>
     </div>
   );
+}
+
+const StatusBadge = ({ status }: { status: string }) => {
+    let styles = "bg-slate-100 text-slate-500";
+    if (status === 'Active') styles = "bg-green-50 text-green-700 border-green-100";
+    if (status === 'Suspended') styles = "bg-red-50 text-red-700 border-red-100";
+    if (status === 'Impeached') styles = "bg-orange-50 text-orange-700 border-orange-100";
+
+    return (
+        <span className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${styles}`}>
+            {status}
+        </span>
+    )
 }

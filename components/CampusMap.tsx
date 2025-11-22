@@ -126,7 +126,7 @@ export const CampusMap: React.FC = () => {
   const [selectedHall, setSelectedHall] = useState<Hall | null>(null);
 
   return (
-    <div className="relative w-full h-[600px] bg-[#F0EFE9] rounded-xl overflow-hidden border border-stone-300 shadow-inner group select-none">
+    <div className="relative w-full h-[600px] bg-slate-100 rounded-xl overflow-hidden border border-slate-300 shadow-inner group select-none">
       {/* Map Texture/Background */}
       <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
           backgroundImage: 'radial-gradient(#444 1px, transparent 1px)',
@@ -134,7 +134,7 @@ export const CampusMap: React.FC = () => {
       }}></div>
       
       {/* Compass / Decor */}
-      <div className="absolute top-6 left-6 text-stone-300 pointer-events-none">
+      <div className="absolute top-6 left-6 text-slate-300 pointer-events-none">
         <div className="text-6xl font-serif font-bold opacity-20">UI</div>
         <div className="text-xs tracking-[0.5em] uppercase opacity-40 mt-2">Campus Map</div>
       </div>
@@ -143,31 +143,23 @@ export const CampusMap: React.FC = () => {
       {halls.map((hall) => (
         <motion.button
           key={hall.id}
-          className="absolute w-8 h-8 -ml-4 -mt-4 flex items-center justify-center group/pin cursor-pointer z-10"
+          className="absolute w-12 h-12 -ml-6 -mt-6 flex items-center justify-center group/pin cursor-pointer z-10"
           style={{ top: hall.position.top, left: hall.position.left }}
           onClick={() => setSelectedHall(hall)}
-          whileHover={{ scale: 1.2 }}
+          whileHover={{ scale: 1.1 }}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="relative flex flex-col items-center">
-             {/* Pin Head */}
-             <div 
-               className={`w-6 h-6 rounded-full shadow-md border-2 border-white flex items-center justify-center transition-colors duration-300 ${selectedHall?.id === hall.id ? 'scale-125' : ''}`}
-               style={{ backgroundColor: hall.color }}
-             >
-               <Home size={12} className="text-white" />
-             </div>
-             
-             {/* Pulse Effect */}
-             <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: hall.color }}></div>
-             
-             {/* Label on Hover */}
-             <div className="absolute top-8 whitespace-nowrap bg-stone-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/pin:opacity-100 transition-opacity pointer-events-none z-20 font-medium tracking-wide uppercase">
+          {/* Reverting to icon */}
+          <div className="w-full h-full flex items-center justify-center bg-white rounded-full shadow-md border-2 transition-colors group-hover/pin:bg-slate-100" style={{ borderColor: hall.color }}>
+              <MapPin size={20} style={{ color: hall.color }} />
+          </div>
+          
+           {/* Label on Hover */}
+           <div className="absolute top-14 whitespace-nowrap bg-slate-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/pin:opacity-100 transition-opacity pointer-events-none z-20 font-medium tracking-wide uppercase">
                 {hall.name}
              </div>
-          </div>
         </motion.button>
       ))}
 
@@ -178,11 +170,11 @@ export const CampusMap: React.FC = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 50 }}
-            className="absolute top-4 right-4 bottom-4 w-full md:w-80 bg-white/95 backdrop-blur-md shadow-xl rounded-lg border border-stone-200 p-6 overflow-y-auto z-30 flex flex-col"
+            className="absolute top-4 right-4 bottom-4 w-full md:w-80 bg-white/95 backdrop-blur-md shadow-xl rounded-lg border border-slate-200 p-6 overflow-y-auto z-30 flex flex-col"
           >
              <button 
                onClick={() => setSelectedHall(null)}
-               className="absolute top-4 right-4 text-stone-400 hover:text-stone-900 transition-colors"
+               className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition-colors"
              >
                <X size={20} />
              </button>
@@ -191,33 +183,33 @@ export const CampusMap: React.FC = () => {
                 <div className="inline-block px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-widest text-white mb-3" style={{ backgroundColor: selectedHall.color }}>
                     {selectedHall.alias}
                 </div>
-                <h3 className="font-serif text-2xl text-stone-900 leading-tight">{selectedHall.name}</h3>
-                <div className="h-0.5 w-12 mt-3 bg-stone-200"></div>
+                <h3 className="font-serif text-2xl text-slate-900 leading-tight">{selectedHall.name}</h3>
+                <div className="h-0.5 w-12 mt-3 bg-slate-200"></div>
              </div>
 
              <div className="space-y-6">
                 <div>
-                    <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                         <Info size={12} /> About
                     </h4>
-                    <p className="text-sm text-stone-600 leading-relaxed">
+                    <p className="text-sm text-slate-600 leading-relaxed">
                         {selectedHall.desc}
                     </p>
                 </div>
 
-                <div className="bg-stone-50 p-4 rounded-md border border-stone-100">
-                    <h4 className="text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Motto</h4>
-                    <p className="font-serif italic text-stone-800 text-lg">"{selectedHall.motto}"</p>
+                <div className="bg-slate-50 p-4 rounded-md border border-slate-100">
+                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Motto</h4>
+                    <p className="font-serif italic text-slate-800 text-lg">"{selectedHall.motto}"</p>
                 </div>
 
                 <div>
-                    <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                         <GraduationCap size={12} /> Notable Alumni
                     </h4>
-                    <ul className="text-sm text-stone-600 space-y-2">
+                    <ul className="text-sm text-slate-600 space-y-2">
                         {selectedHall.notable.map((person, i) => (
                             <li key={i} className="flex items-start gap-2">
-                                <span className="text-stone-300">•</span> {person}
+                                <span className="text-slate-300">•</span> {person}
                             </li>
                         ))}
                     </ul>
@@ -232,7 +224,7 @@ export const CampusMap: React.FC = () => {
       </AnimatePresence>
 
       {/* Mobile Helper */}
-      <div className="absolute bottom-4 left-0 right-0 text-center text-stone-400 text-xs md:hidden pointer-events-none">
+      <div className="absolute bottom-4 left-0 right-0 text-center text-slate-400 text-xs md:hidden pointer-events-none">
         Tap a pin to explore
       </div>
     </div>
@@ -251,21 +243,21 @@ export const HallGrid: React.FC = () => {
             key={hall.id}
             layout
             onClick={() => setSelectedId(isSelected ? null : hall.id)}
-            className={`bg-white border-t-4 rounded-xl shadow-sm cursor-pointer transition-all duration-300 overflow-hidden ${isSelected ? 'shadow-lg ring-1 ring-stone-200 row-span-2' : 'hover:shadow-md'}`}
+            className={`bg-white border-t-4 rounded-xl shadow-sm cursor-pointer transition-all duration-300 overflow-hidden ${isSelected ? 'shadow-lg ring-1 ring-slate-200 row-span-2' : 'hover:shadow-md'}`}
             style={{ borderTopColor: hall.color }}
           >
              <div className="p-6">
                <div className="flex justify-between items-start mb-4">
-                  <div className="bg-stone-100 text-stone-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider border border-stone-200">
+                  <div className="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider border border-slate-200">
                     {hall.alias}
                   </div>
-                  <div className="text-stone-400">
+                  <div className="text-slate-400">
                     {isSelected ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                   </div>
                </div>
 
-               <h3 className="font-serif text-xl font-bold text-stone-900 mb-2">{hall.name}</h3>
-               <p className="text-sm text-stone-500 italic font-serif mb-0">"{hall.motto}"</p>
+               <h3 className="font-serif text-xl font-bold text-slate-900 mb-2">{hall.name}</h3>
+               <p className="text-sm text-slate-500 italic font-serif mb-0">"{hall.motto}"</p>
 
                <AnimatePresence>
                   {isSelected && (
@@ -273,19 +265,19 @@ export const HallGrid: React.FC = () => {
                       initial={{ opacity: 0, height: 0, marginTop: 0 }}
                       animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
                       exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                      className="border-t border-stone-100 pt-4"
+                      className="border-t border-slate-100 pt-4"
                     >
-                       <p className="text-stone-700 text-sm leading-relaxed mb-6">
+                       <p className="text-slate-700 text-sm leading-relaxed mb-6">
                          {hall.desc}
                        </p>
                        
                        <div>
-                          <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                              <GraduationCap size={14} /> Notable Figures
                           </h4>
                           <div className="flex flex-wrap gap-2">
                              {hall.notable.map((person, idx) => (
-                               <span key={idx} className="bg-stone-50 border border-stone-200 text-stone-600 text-xs px-3 py-1.5 rounded-full font-medium">
+                               <span key={idx} className="bg-slate-50 border border-slate-200 text-slate-600 text-xs px-3 py-1.5 rounded-full font-medium">
                                  {person}
                                </span>
                              ))}
